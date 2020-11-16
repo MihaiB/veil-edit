@@ -1,1 +1,3 @@
 Decrypt a file (symmetric GPG), invoke an editor, then re-encrypt the file.
+
+./main.py --help
