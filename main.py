@@ -68,10 +68,9 @@ def sameFileContent(a, b):
             stdout=subprocess.DEVNULL).returncode
     if code == 0:
         return True
-    elif code == 1:
+    if code == 1:
         return False
-    else:
-        raise Exception('diff reported trouble: returncode {}'.format(code))
+    raise Exception('diff reported trouble: returncode {}'.format(code))
 
 
 def confirmOverwrite(path):
@@ -113,8 +112,8 @@ def main():
     except:
         print('Preserved the file being edited:', editFile)
         raise
-    else:
-        shutil.rmtree(editDir)
+
+    shutil.rmtree(editDir)
 
 
 if __name__ == '__main__':
