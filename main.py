@@ -42,15 +42,37 @@ def readpass(confirm):
 
 
 def encrypt(src, dest, passwd):
-    subprocess.run(['gpg', '--symmetric', '--batch', '--yes',
-        '--passphrase-fd', '0', '--output', dest, src],
-        encoding='utf-8', input=passwd, check=True)
+    args = [
+        'gpg',
+        #
+        '--batch',
+        '--no-symkey-cache',
+        '--output', dest,
+        '--passphrase-fd', '0', # docs say: --batch, --pinentry-mode loopback
+        '--pinentry-mode', 'loopback',
+        '--yes',
+        #
+        '--symmetric',
+        src,
+    ]
+
+    subprocess.run(args, encoding='utf-8', input=passwd, check=True)
 
 
 def decrypt(src, dest, passwd):
-    subprocess.run(['gpg', '--decrypt', '--batch',
-        '--passphrase-fd', '0', '--output', dest, src],
-        encoding='utf-8', input=passwd, check=True)
+    args = [
+        'gpg',
+        #
+        '--batch',
+        '--no-symkey-cache',
+        '--output', dest,
+        '--passphrase-fd', '0', # docs say: --batch, --pinentry-mode loopback
+        '--pinentry-mode', 'loopback',
+        #
+        '--decrypt',
+        src,
+    ]
+    subprocess.run(args, encoding='utf-8', input=passwd, check=True)
 
 
 def makeNewVeil(dest, passwd):
