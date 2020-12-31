@@ -16,19 +16,19 @@ def parseArgs():
             (symmetric GPG).''',
             epilog='''Decrypt to 2 temporary files and open one in an editor.
             After the editor exits, if the files differ,
-            ask the user to discard the changes
+            ask the user to either discard the changes
             or overwrite the encrypted file.''')
     p.add_argument('--new', action='store_true', help='Create a new file.')
     p.add_argument('--editor',
             default=os.getenv(ENV_VAR_NAME_EDITOR, DEFAULT_EDITOR),
             help='''Invoked with one argument, the decrypted file.
-            The default is taken from the environment variable ''' +
-            ENV_VAR_NAME_EDITOR + ''' if it exists, else it is ''' +
-            DEFAULT_EDITOR + '''. (your default is %(default)s)''')
+            The default is taken from the environment variable ‘''' +
+            ENV_VAR_NAME_EDITOR + '''’ if it exists, else it is ‘''' +
+            DEFAULT_EDITOR + '''’. (your default is ‘%(default)s’)''')
     p.add_argument('--diff', default='meld',
             help='''Invoked with two arguments,
             the original file and the edited one,
-            to show the difference between them. (default %(default)s)''')
+            to show the difference between them. (default ‘%(default)s’)''')
     p.add_argument('file')
     return p.parse_args()
 
