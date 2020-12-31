@@ -72,6 +72,7 @@ def decrypt(src, dest, passwd):
         '--decrypt',
         src,
     ]
+
     subprocess.run(args, encoding='utf-8', input=passwd, check=True)
 
 
