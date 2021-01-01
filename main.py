@@ -11,7 +11,7 @@ ENV_VAR_NAME_EDITOR='EDITOR'
 DEFAULT_EDITOR='vim'
 
 
-def parseArgs():
+def parse_args():
     p = argparse.ArgumentParser(description='''Edit an encrypted file
             (symmetric GPG).''',
             epilog='''Decrypt to 2 temporary files and open one in an editor.
@@ -76,7 +76,7 @@ def decrypt(src, dest, passwd):
     subprocess.run(args, encoding='utf-8', input=passwd, check=True)
 
 
-def makeNewVeil(dest, passwd):
+def make_new_veil(dest, passwd):
     if os.path.lexists(dest):
         raise FileExistsError(dest)
     with tempfile.TemporaryDirectory() as d:
@@ -86,7 +86,7 @@ def makeNewVeil(dest, passwd):
         encrypt(src, dest, passwd)
 
 
-def sameFileContent(a, b):
+def same_file_content(a, b):
     code = subprocess.run(['diff', '-q', a, b],
             stdout=subprocess.DEVNULL).returncode
     if code == 0:
@@ -96,7 +96,7 @@ def sameFileContent(a, b):
     raise Exception('diff reported trouble: returncode {}'.format(code))
 
 
-def confirmOverwrite(path):
+def confirm_overwrite(path):
     while True:
         answer = input('Overwrite {}? [y/n] '.format(path))
         if answer == 'y':
@@ -107,36 +107,36 @@ def confirmOverwrite(path):
 
 
 def main():
-    args = parseArgs()
+    args = parse_args()
     passwd = readpass(confirm=args.new)
     if args.new:
-        makeNewVeil(args.file, passwd)
+        make_new_veil(args.file, passwd)
 
-    editDir = tempfile.mkdtemp()
-    editFile = os.path.join(editDir, 'edit')
-    decrypt(args.file, editFile, passwd)
+    edit_dir = tempfile.mkdtemp()
+    edit_file = os.path.join(edit_dir, 'edit')
+    decrypt(args.file, edit_file, passwd)
 
     try:
-        with tempfile.TemporaryDirectory() as origDir:
-            origFile = os.path.join(origDir, 'orig')
-            shutil.copyfile(editFile, origFile)
+        with tempfile.TemporaryDirectory() as orig_dir:
+            orig_file = os.path.join(orig_dir, 'orig')
+            shutil.copyfile(edit_file, orig_file)
 
-            subprocess.run([args.editor, editFile], check=True)
+            subprocess.run([args.editor, edit_file], check=True)
 
-            if sameFileContent(origFile, editFile):
+            if same_file_content(orig_file, edit_file):
                 print(args.file, 'not changed.')
             else:
-                subprocess.run([args.diff, origFile, editFile], check=True)
-                if confirmOverwrite(args.file):
-                    encrypt(editFile, args.file, passwd)
+                subprocess.run([args.diff, orig_file, edit_file], check=True)
+                if confirm_overwrite(args.file):
+                    encrypt(edit_file, args.file, passwd)
                     print(args.file, 'overwritten.')
                 else:
                     print('Discarded changes to {}.'.format(args.file))
     except:
-        print('Preserved the file being edited:', editFile)
+        print('Preserved the file being edited:', edit_file)
         raise
 
-    shutil.rmtree(editDir)
+    shutil.rmtree(edit_dir)
 
 
 if __name__ == '__main__':
